@@ -1,0 +1,69 @@
+make_candidates :: Point -> Point -> [[Point]] -> [Candidate]
+make_candidates (x0,y0) (xn,yn) (x:pss) = [((x0,y0),(xn,yn),pss!!n,(t n))]
+ where
+  
+  n = (length pss)-1
+  t (x:pss) = total_time (x0,y0) (xn,yn) (x)
+
+#doesn't work
+sort_by_time :: [Candidate] -> [Candidate]
+sort_by_time cs = sortBy (\(_,_,_,a) (_,_,_,b) -> compare a b) cs
+
+
+
+
+
+
+
+
+
+
+
+
+random_list :: Int -> (Int, Int) -> StdGen -> ([Int], StdGen)
+random_list 0 _ gen = ([], gen)
+random_list n minmax gen = ((r:rs), g2)
+ where
+  (r, g) = randomR minmax gen
+  (rs, g2) = random_list (n-1) minmax g
+
+create_random_candidates :: Int -> Point -> Point -> [Float] -> (Float,Float) -> StdGen -> ([Candidate], StdGen)
+
+
+----Part 4----
+
+crossover :: [Candidate] -> Int -> StdGen -> ([Candidate], StdGen)
+crossover cs n g = (cs ++ cs_new, g1)
+ where
+  pairs = [(( cs !! c1), (cs !! c2)) | c1 <- [0..(n-1)], c2 <- [(c1+1)..(n-1)]]
+  (cs_new, g1) = cross_pairs pairs g
+
+cross_pairs :: [( Candidate, Candidate)] -> StdGen -> ([Candidate], StdGen)
+cross_pairs [] g = ([], g)
+cross_pairs (cp:cps) g = (c:cs, g2)
+ where
+  (c, g1) = cross_pair cp g
+  (cs, g2) = cross_pairs cps g1
+
+cross_pair :: (Candidate, Candidate) -> StdGen -> (Candidate, StdGen)
+cross_pair (( s, e, ps1, _ ), (_, _, ps2, _)) g = (( s, e, ps, t ), g1)
+ where
+  (ps, g1) = cross_supp ps1 ps2 g
+  t = total_time s e ps
+
+cross_supp :: [Point] -> [Point] -> StdGen -> ([Point], StdGen)
+cross_supp [] [] g = ([], g)
+cross_supp (c1:cs1) (c2:cs2) g = (( if r < 0.5 then c1 else c2) : xs, g2)
+ where
+  ( r , g1) = randomR (0 :: Float, 1 :: Float) g
+  (xs, g2) = cross_supp cs1 cs2 g1
+
+
+mutation :: Int -> Int -> (Float, Float) -> [Candidate] -> StdGen ->([Candidate], StdGen)
+
+
+
+----Part 5----
+
+
+----Part 6----
